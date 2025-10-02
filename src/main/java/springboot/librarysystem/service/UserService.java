@@ -6,6 +6,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import springboot.librarysystem.entity.User;
@@ -37,6 +38,7 @@ public class UserService {
             .build();
     }
     
+    @Transactional
     public boolean createUser(User user) {
         // Check if username already exists
         if (userRepository.findByUsername(user.getUsername()) != null) {
@@ -66,6 +68,7 @@ public class UserService {
         return user.orElse(null);
     }
 
+    @Transactional
     public User updateUserPassword(Long id, User user) {
         Optional<User> existing = userRepository.findById(id);
         if (existing.isPresent() && user.getPassword() != null && !user.getPassword().isEmpty()) {
@@ -77,6 +80,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public boolean deleteUser(Long id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);

@@ -2,6 +2,7 @@ package springboot.librarysystem.service;
 
 import springboot.librarysystem.entity.Library;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LibraryService {
@@ -12,6 +13,7 @@ public class LibraryService {
 	/**
 	 * Add a new library branch
 	 */
+	@Transactional
 	public Library addLibrary(Library library) {
 		return libraryRepository.save(library);
 	}

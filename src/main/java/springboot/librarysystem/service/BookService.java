@@ -2,6 +2,7 @@ package springboot.librarysystem.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import springboot.librarysystem.entity.Book;
 import springboot.librarysystem.entity.BookLocation;
@@ -19,10 +20,12 @@ public class BookService {
 	@Autowired
 	private BookLocationRepository bookLocationRepository;
 
+	@Transactional
 	public Book addBook(Book book) {
 		return bookRepository.save(book);
 	}
 
+	@Transactional
 	public Book updateBook(Long bookId, Book updatedBook) {
 		Book book = bookRepository.findById(bookId).orElse(null);
 		if (book == null) {
@@ -42,6 +45,7 @@ public class BookService {
 	 * @param bookId   Book ID
 	 * @param location Location request
 	 */
+	@Transactional
 	public void addBookLocation(Long bookId, LocationRequestDto location) {
 		Book book = bookRepository.findById(bookId).orElse(null);
 		if (book == null) {
@@ -67,6 +71,7 @@ public class BookService {
 	/**
 	 * Update a book location for a specific book and library.
 	 */
+	@Transactional
 	public BookLocation updateBookLocation(Long bookId, LocationRequestDto location) {
 		BookLocation bookLocation = bookLocationRepository.findByBookIdAndLibraryId(bookId, location.libraryId);
 		if (bookLocation == null) {
