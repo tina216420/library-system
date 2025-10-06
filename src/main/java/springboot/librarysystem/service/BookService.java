@@ -46,7 +46,7 @@ public class BookService {
 	 * @param location Location request
 	 */
 	@Transactional
-	public void addBookLocation(Long bookId, LocationRequestDto location) {
+	public BookLocation addBookLocation(Long bookId, LocationRequestDto location) {
 		Book book = bookRepository.findById(bookId).orElse(null);
 		if (book == null) {
 			throw new IllegalArgumentException("Book does not exist");
@@ -65,7 +65,7 @@ public class BookService {
 		bookLocation.setLibrary(library);
 		bookLocation.setTotalQuantity(location.totalQuantity);
 		bookLocation.setAvailableQuantity(location.availableQuantity);
-		bookLocationRepository.save(bookLocation);
+		return bookLocationRepository.save(bookLocation);
 	}
 
 	/**

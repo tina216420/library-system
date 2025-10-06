@@ -38,10 +38,12 @@ public class BookController {
 	// Create book locations (only accessible by librarians, permission can be
 	// extended)
 	@PostMapping("/{bookId}/location")
-	public ResponseEntity<ApiResponseDto<Void>> addBookLocation(@PathVariable Long bookId,
+	public ResponseEntity<ApiResponseDto<BookWithLocationsDto.BookLocationInfoDto>> addBookLocation(@PathVariable Long bookId,
 			@RequestBody LocationRequestDto location) {
-		bookService.addBookLocation(bookId, location);
-		return ResponseEntity.ok(new ApiResponseDto<>(200, "Book location created successfully", null));
+		var saved = bookService.addBookLocation(bookId, location);
+		var info = new BookWithLocationsDto.BookLocationInfoDto(saved.getLibrary().getName(),
+				saved.getTotalQuantity(), saved.getAvailableQuantity());
+		return ResponseEntity.ok(new ApiResponseDto<>(200, "Book location created successfully", info));
 	}
 
 	// Update book location (only accessible by librarians, permission can be

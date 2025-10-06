@@ -3,6 +3,7 @@ package springboot.librarysystem.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.librarysystem.repository.LoanRepository;
 import springboot.librarysystem.repository.UserRepository;
@@ -21,6 +22,15 @@ public class LoanService {
 	public static final String STATUS_RETURNED = "Returned";
 	public static final String STATUS_OVERDUE = "Overdue";
 	public static final String TYPE_BOOK = "圖書";
+	
+	@Value("${library.loan.duration.months:1}")
+	private int loanDurationMonths;
+	@Value("${library.notification.days.before:5}")
+	private int notificationDaysBefore;
+	@Value("${library.borrow.limit.book:5}")
+	private int bookBorrowLimit;
+	@Value("${library.borrow.limit.other:10}")
+	private int otherBorrowLimit;
 	@Autowired
 	private LibraryRepository libraryRepository;
 	@Autowired
@@ -57,14 +67,14 @@ public class LoanService {
 
 		// Query borrowed count by book type using SQL
 		long userTypeCount = loanRepository.countBorrowedByUserIdAndBookType(userId, book.getType());
-		long bookTypeLimit = TYPE_BOOK.equals(book.getType()) ? 5 : 10;
+		long bookTypeLimit = TYPE_BOOK.equals(book.getType()) ? bookBorrowLimit : otherBorrowLimit;
 		if (userTypeCount >= bookTypeLimit) {
 			throw new IllegalStateException("Borrowing limit reached: " + book.getType() + " max " + bookTypeLimit);
 		}
 
-		// Borrow period: 1 month
+		// Borrow period: configurable months
 		java.time.LocalDate now = java.time.LocalDate.now();
-		java.time.LocalDate due = now.plusMonths(1);
+		java.time.LocalDate due = now.plusMonths(loanDurationMonths);
 		Loan loan = new Loan();
 		loan.setUser(user);
 		loan.setBook(book);
@@ -107,17 +117,17 @@ public class LoanService {
 	}
 
 	/**
-	 * Notify users whose loans are due within 5 days (simulated with
+	 * Notify users whose loans are due within configurable days (simulated with
 	 * System.out.println).
 	 */
 	public int notifyDueSoon() {
 		java.time.LocalDate now = java.time.LocalDate.now();
-		java.time.LocalDate dueSoonDate = now.plusDays(5);
+		java.time.LocalDate dueSoonDate = now.plusDays(notificationDaysBefore);
 		java.sql.Date sqlDueSoonDate = java.sql.Date.valueOf(dueSoonDate);
 		java.util.List<Loan> dueSoonLoans = loanRepository.findDueSoonLoans(sqlDueSoonDate);
 		dueSoonLoans.forEach(l -> {
 			System.out.println("Notification: User " + l.getUser().getUsername() + " - Your borrowed book '"
-					+ l.getBook().getTitle() + "' is due soon!");
+					+ l.getBook().getTitle() + "' is due in " + notificationDaysBefore + " days!");
 		});
 		return dueSoonLoans.size();
 	}

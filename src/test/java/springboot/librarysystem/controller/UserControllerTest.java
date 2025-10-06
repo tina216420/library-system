@@ -93,7 +93,7 @@ public class UserControllerTest {
         user.setId(1L);
         user.setUsername("updated");
         Mockito.when(userService.updateUserPassword(Mockito.eq(1L), Mockito.any(User.class))).thenReturn(user);
-        mockMvc.perform(put("/api/users/1")
+        mockMvc.perform(patch("/api/users/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
@@ -106,7 +106,7 @@ public class UserControllerTest {
         Mockito.when(userService.updateUserPassword(Mockito.eq(2L), Mockito.any(User.class))).thenReturn(null);
         User user = new User();
         user.setUsername("notfound");
-        mockMvc.perform(put("/api/users/2")
+        mockMvc.perform(patch("/api/users/2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isBadRequest())
@@ -115,26 +115,26 @@ public class UserControllerTest {
 
     @Test
     void testLogin_success() throws Exception {
-        User user = new User();
-        user.setUsername("testuser");
-        user.setPassword("password");
-        Mockito.when(userService.login("testuser", "password")).thenReturn(true);
+        Mockito.when(userService.login(Mockito.eq("testuser"), Mockito.eq("password"))).thenReturn(true);
+        // Create JSON manually to include password field despite WRITE_ONLY setting
+        String jsonContent = "{\"username\":\"testuser\",\"password\":\"password\",\"email\":\"test@example.com\",\"role\":\"USER\"}";
+        
         mockMvc.perform(post("/api/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)))
+                .content(jsonContent))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Login successful"));
     }
 
     @Test
     void testLogin_fail() throws Exception {
-        User user = new User();
-        user.setUsername("testuser");
-        user.setPassword("wrongpass");
         Mockito.when(userService.login("testuser", "wrongpass")).thenReturn(false);
+        // Create JSON manually to include password field despite WRITE_ONLY setting
+        String jsonContent = "{\"username\":\"testuser\",\"password\":\"wrongpass\",\"email\":\"test@example.com\",\"role\":\"USER\"}";
+        
         mockMvc.perform(post("/api/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)))
+                .content(jsonContent))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Login failed: incorrect username or password"));
     }

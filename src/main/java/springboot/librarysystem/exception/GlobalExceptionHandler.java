@@ -5,9 +5,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import springboot.librarysystem.dto.ApiResponseDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     @ExceptionHandler(TransactionSystemException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleTransactionSystemException(TransactionSystemException ex) {
     ApiResponseDto<Void> response = new ApiResponseDto<>(500, "Transaction failed: Database transaction failed or data is inconsistent", null);
@@ -34,6 +37,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponseDto<Void>> handleOther(Exception ex) {
+        log.error("Unexpected error occurred", ex);
         ApiResponseDto<Void> response = new ApiResponseDto<>(500, "Internal server error", null);
         return ResponseEntity.internalServerError().body(response);
     }

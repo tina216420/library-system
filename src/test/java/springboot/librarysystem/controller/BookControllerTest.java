@@ -72,7 +72,15 @@ public class BookControllerTest {
         req.libraryId = 2L;
         req.totalQuantity = 10;
         req.availableQuantity = 8;
-        Mockito.doNothing().when(bookService).addBookLocation(Mockito.eq(1L), Mockito.any(LocationRequestDto.class));
+        
+        BookLocation bookLocation = Mockito.mock(BookLocation.class);
+        Library library = new Library();
+        library.setName("Main Branch");
+        Mockito.when(bookLocation.getLibrary()).thenReturn(library);
+        Mockito.when(bookLocation.getTotalQuantity()).thenReturn(10);
+        Mockito.when(bookLocation.getAvailableQuantity()).thenReturn(8);
+
+        Mockito.when(bookService.addBookLocation(Mockito.eq(1L), Mockito.any(LocationRequestDto.class))).thenReturn(bookLocation);
         mockMvc.perform(post("/api/books/1/location")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))

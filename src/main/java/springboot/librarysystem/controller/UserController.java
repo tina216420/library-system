@@ -46,7 +46,7 @@ public class UserController {
 	}
 
 	// Update user password
-	@PutMapping("/{id}")
+	@PatchMapping("/{id}")
 	public ResponseEntity<ApiResponseDto<User>> updateUser(@PathVariable Long id, @RequestBody User user) {
 		User updated = userService.updateUserPassword(id, user);
 		if (updated == null) {
