@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import springboot.librarysystem.entity.Book;
 import springboot.librarysystem.entity.BookLocation;
 import springboot.librarysystem.entity.Library;
@@ -23,11 +23,11 @@ public class BookServiceTest {
     @Autowired
     private BookService bookService;
 
-    @MockBean
+    @MockitoBean
     private BookRepository bookRepository;
-    @MockBean
+    @MockitoBean
     private LibraryRepository libraryRepository;
-    @MockBean
+    @MockitoBean
     private BookLocationRepository bookLocationRepository;
 
     @Test

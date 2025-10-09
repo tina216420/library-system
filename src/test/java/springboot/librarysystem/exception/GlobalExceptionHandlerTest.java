@@ -14,7 +14,7 @@ public class GlobalExceptionHandlerTest {
     void testHandleTransactionSystemException() {
         org.springframework.transaction.TransactionSystemException ex = new org.springframework.transaction.TransactionSystemException("tx error");
         ResponseEntity<ApiResponseDto<Void>> resp = handler.handleTransactionSystemException(ex);
-        assertEquals(500, resp.getStatusCodeValue());
+        assertEquals(500, resp.getStatusCode().value());
         assertNotNull(resp.getBody());
         assertEquals("Transaction failed: Database transaction failed or data is inconsistent", resp.getBody().getMessage());
     }
@@ -23,7 +23,7 @@ public class GlobalExceptionHandlerTest {
     void testHandleIllegalArgument() {
         IllegalArgumentException ex = new IllegalArgumentException("bad arg");
         ResponseEntity<ApiResponseDto<Void>> resp = handler.handleIllegalArgument(ex);
-        assertEquals(400, resp.getStatusCodeValue());
+        assertEquals(400, resp.getStatusCode().value());
         assertNotNull(resp.getBody());
         assertEquals("bad arg", resp.getBody().getMessage());
     }
@@ -32,7 +32,7 @@ public class GlobalExceptionHandlerTest {
     void testHandleIllegalState() {
         IllegalStateException ex = new IllegalStateException("bad state");
         ResponseEntity<ApiResponseDto<Void>> resp = handler.handleIllegalState(ex);
-        assertEquals(400, resp.getStatusCodeValue());
+        assertEquals(400, resp.getStatusCode().value());
         assertNotNull(resp.getBody());
         assertEquals("bad state", resp.getBody().getMessage());
     }
@@ -41,7 +41,7 @@ public class GlobalExceptionHandlerTest {
     void testHandleUsernameNotFound() {
         UsernameNotFoundException ex = new UsernameNotFoundException("user not found");
         ResponseEntity<ApiResponseDto<Void>> resp = handler.handleUsernameNotFound(ex);
-        assertEquals(404, resp.getStatusCodeValue());
+        assertEquals(404, resp.getStatusCode().value());
         assertNotNull(resp.getBody());
         assertEquals("user not found", resp.getBody().getMessage());
     }
@@ -50,7 +50,7 @@ public class GlobalExceptionHandlerTest {
     void testHandleOther() {
         Exception ex = new Exception("any error");
         ResponseEntity<ApiResponseDto<Void>> resp = handler.handleOther(ex);
-        assertEquals(500, resp.getStatusCodeValue());
+        assertEquals(500, resp.getStatusCode().value());
         assertNotNull(resp.getBody());
         assertEquals("Internal server error", resp.getBody().getMessage());
     }

@@ -1,6 +1,6 @@
 package springboot.librarysystem.config;
 
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class SecurityConfig {
 	@Bean
 	public JsonAuthHandlers.JsonAuthenticationEntryPoint jsonAuthenticationEntryPoint() {
@@ -36,23 +36,25 @@ public class SecurityConfig {
 
 	@Bean
 	public org.springframework.security.web.SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.csrf().disable()
-			.headers().frameOptions().disable().and()
-			.authorizeRequests()
-				.antMatchers(
+		http.csrf(csrf -> csrf.disable())
+			.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
+			.authorizeHttpRequests(authz -> authz
+				.requestMatchers(
 					"/swagger-ui.html",
 					"/swagger-ui/**",
 					"/v3/api-docs/**"
 				).permitAll()
-				.antMatchers("/api/books/search").permitAll()
-				.antMatchers("/api/books/**").hasRole("LIBRARIAN")
-				.antMatchers("/api/libraries/**").hasRole("LIBRARIAN")
+				.requestMatchers("/api/books/search").permitAll()
+				.requestMatchers("/api/books/**").hasRole("LIBRARIAN")
+				.requestMatchers("/api/libraries/**").hasRole("LIBRARIAN")
 				.anyRequest().permitAll()
-			.and()
-			.httpBasic()
-			.authenticationEntryPoint(jsonAuthenticationEntryPoint())
-			.and()
-			.exceptionHandling().accessDeniedHandler(jsonAccessDeniedHandler());
+			)
+			.httpBasic(basic -> basic
+				.authenticationEntryPoint(jsonAuthenticationEntryPoint())
+			)
+			.exceptionHandling(ex -> ex
+				.accessDeniedHandler(jsonAccessDeniedHandler())
+			);
 		return http.build();
 	}
 }

@@ -1,6 +1,6 @@
 package springboot.librarysystem.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "book_locations", uniqueConstraints = @UniqueConstraint(columnNames = { "book_id", "library_id" }))

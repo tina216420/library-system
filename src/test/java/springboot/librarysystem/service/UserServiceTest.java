@@ -2,10 +2,9 @@ package springboot.librarysystem.service;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -18,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class UserServiceTest {
-    @SpyBean
+    @MockitoSpyBean
     private UserService userService;
-    @MockBean
+    @MockitoBean
     private UserRepository userRepository;
-    @MockBean
+    @MockitoBean
     private PasswordEncoder passwordEncoder;
-    @MockBean
+    @MockitoBean
     private RestTemplate restTemplate;
 
     @Test
@@ -107,9 +106,8 @@ public class UserServiceTest {
         Mockito.when(userRepository.findByUsername("librarian")).thenReturn(null);
         Mockito.when(passwordEncoder.encode("password")).thenReturn("encoded");
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
-        UserService spyService = Mockito.spy(userService);
-        Mockito.doReturn(true).when(spyService).verifyLibrarian();
-        boolean result = spyService.createUser(user);
+        Mockito.doReturn(true).when(userService).verifyLibrarian();
+        boolean result = userService.createUser(user);
         assertTrue(result);
     }
 
@@ -120,9 +118,8 @@ public class UserServiceTest {
         user.setPassword("password");
         user.setRole("Librarian");
         Mockito.when(userRepository.findByUsername("librarian")).thenReturn(null);
-        UserService spyService = Mockito.spy(userService);
-        Mockito.doReturn(false).when(spyService).verifyLibrarian();
-        boolean result = spyService.createUser(user);
+        Mockito.doReturn(false).when(userService).verifyLibrarian();
+        boolean result = userService.createUser(user);
         assertFalse(result);
     }
 
